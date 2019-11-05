@@ -4,8 +4,9 @@ import { endpoint } from '../config';
 
 function createClient({ headers }) {
   return new ApolloClient({
-    uri: process.env.NODE_ENV === 'development' ? endpoint : endpoint,
-    request: operation => {
+
+    uri: process.env.NODE_ENV === 'development' ? endpoint : endpoint, // eslint-disable-line no-undef
+    request: (operation) => {
       operation.setContext({
         fetchOptions: {
           credentials: 'include',
