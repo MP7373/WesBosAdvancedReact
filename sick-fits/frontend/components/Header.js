@@ -18,7 +18,7 @@ Router.onRouteChangeError = () => {
 
 
 const Logo = styled.h1`
-  font-size: 5em;
+  font-size: 4em;
   margin: 0 10px 10px 40px;
   position: relative;
   z-index: 2;
@@ -36,19 +36,26 @@ const Logo = styled.h1`
   @media (max-width: 1300px) {
     margin: 0 0 0 30px;
     text-align: center;
-  } 
+  }
+  @media (max-width: 400px) {
+    font-size: 2em;
+    margin: 0 0 0 5px;
+  }
 `;
 
 const StyledHeader = styled.header`
   .bar {
     border-bottom: 10px solid ${(props) => props.theme.black};
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-auto-columns: auto 1fr;
     justify-content: space-between;
     align-items: stretch;
     @media (max-width: 1300px) {
       grid-auto-columns: 1fr;
       justify-content: center;
+    }
+    @media (max-width: 400px) {
+      font-size: .5em;
     }
   }
 

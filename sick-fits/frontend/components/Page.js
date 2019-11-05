@@ -24,7 +24,8 @@ const Inner = styled.div`
   padding: 2rem;
 `;
 
-injectGlobal(`
+// eslint-disable-next-line no-unused-expressions
+injectGlobal`
   @font-face {
     font-family: 'radnika_next';
     src: url('/static/radnikanext-medium-webfont.woff2');
@@ -36,6 +37,7 @@ injectGlobal(`
   html {
     box-sizing: border-box;
     font-size: 10px;
+    font-family: 'radnika_next';
   }
 
   *, *:before, *:after {
@@ -58,7 +60,7 @@ injectGlobal(`
   button {
     font-family: 'radnika_next';
   }
-`);
+`;
 
 const Page = ({ children }) => (
   <ThemeProvider theme={theme}>
