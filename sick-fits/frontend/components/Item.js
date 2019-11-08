@@ -6,6 +6,8 @@ import formatMoney from '../lib/formatMoney';
 import Title from './styles/Title';
 import ItemStyles from './styles/ItemStyles';
 import PriceTag from './styles/PriceTag';
+// eslint-disable-next-line import/no-cycle
+import DeleteItem from './DeleteItem';
 
 function Item({ item }) {
   return (
@@ -34,7 +36,7 @@ function Item({ item }) {
           </a>
         </Link>
         <button type="button">Add To Cart</button>
-        <button type="button">Delete</button>
+        <DeleteItem id={item.id}>Delete Item</DeleteItem>
       </div>
     </ItemStyles>
   );

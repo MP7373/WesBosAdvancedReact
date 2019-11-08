@@ -30,14 +30,15 @@ class CreateItem extends Component {
   constructor() {
     super();
     this.state = {
-      title: 'Cool Shoes',
-      description: 'Some really cool shoes.',
-      image: 'shoes.jpg',
-      largeImage: 'big-shoes.jpg',
-      price: 1200,
+      title: '',
+      description: '',
+      image: '',
+      largeImage: '',
+      price: 0,
     };
 
     this.handleChage = this.handleChage.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
   }
 
   handleChage(e) {
@@ -46,8 +47,33 @@ class CreateItem extends Component {
     this.setState({ [name]: val });
   }
 
+  async uploadFile(e) {
+    console.log('uploading file');
+    const { files } = e.target;
+    const data = new FormData();
+    data.append('file', files[0]);
+    data.append('upload_preset', 'sickfits');
+
+    const res = await fetch(
+      'https://api.cloudinary.com/v1_1/dkvv4u6rm/image/upload',
+      {
+        method: 'POST',
+        body: data,
+      },
+    );
+    const file = await res.json();
+    console.log(file);
+    this.setState({
+      image: file.secure_url,
+      // eslint-disable-next-line react/no-unused-state
+      largeImage: file.eager && file.eager[0].secure_url,
+    });
+  }
+
   render() {
-    const { title, price, description } = this.state;
+    const {
+      title, price, description, image,
+    } = this.state;
 
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
@@ -57,13 +83,26 @@ class CreateItem extends Component {
             const res = await createItem();
             console.log(res);
             Router.push({
-              pathname: '/item',
+              pathname: '/update',
               query: { id: res.data.createItem.id },
             });
           }}
           >
             <Error error={error} />
             <fieldset disabled={loading} aria-busy={loading}>
+              <label htmlFor="file">
+                Image
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  placeholder="Upload an image"
+                  required
+                  onChange={this.uploadFile}
+                />
+                {image && <img src={image} alt="Upload Preview" />}
+              </label>
+
               <label htmlFor="title">
                 Title
                 <input
