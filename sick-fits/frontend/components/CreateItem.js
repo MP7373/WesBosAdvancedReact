@@ -3,7 +3,6 @@ import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 import Router from 'next/router';
 import Form from './styles/Form';
-import formatMoney from '../lib/formatMoney';
 import Error from './ErrorMessage';
 
 const CREATE_ITEM_MUTATION = gql`
@@ -33,7 +32,6 @@ class CreateItem extends Component {
       title: '',
       description: '',
       image: '',
-      largeImage: '',
       price: 0,
     };
 
@@ -48,7 +46,6 @@ class CreateItem extends Component {
   }
 
   async uploadFile(e) {
-    console.log('uploading file');
     const { files } = e.target;
     const data = new FormData();
     data.append('file', files[0]);
@@ -61,18 +58,21 @@ class CreateItem extends Component {
         body: data,
       },
     );
-    const file = await res.json();
-    console.log(file);
+
+    const { secure_url: secureUrl, eager } = await res.json();
     this.setState({
-      image: file.secure_url,
+      image: secureUrl,
       // eslint-disable-next-line react/no-unused-state
-      largeImage: file.eager && file.eager[0].secure_url,
+      largeImage: eager && eager[0].secure_url,
     });
   }
 
   render() {
     const {
-      title, price, description, image,
+      title,
+      price,
+      description,
+      image,
     } = this.state;
 
     return (
@@ -81,11 +81,14 @@ class CreateItem extends Component {
           <Form onSubmit={async (e) => {
             e.preventDefault();
             const res = await createItem();
-            console.log(res);
-            Router.push({
-              pathname: '/update',
-              query: { id: res.data.createItem.id },
-            });
+            if (!res) {
+              Router.push({
+                pathname: '/update',
+                query: { id: res.data.createItem.id },
+              });
+            } else {
+              window.location.reload(false);
+            }
           }}
           >
             <Error error={error} />
@@ -151,5 +154,5 @@ class CreateItem extends Component {
   }
 }
 
-export default CreateItem;
 export { CREATE_ITEM_MUTATION };
+export default CreateItem;

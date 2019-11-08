@@ -23,6 +23,7 @@ const UPDATE_ITEM_MUTATION = gql`
     $description: String
     $price: Int
     $image: String
+    $largeImage: String
   ) {
     updateItem(
       id: $id
@@ -30,12 +31,14 @@ const UPDATE_ITEM_MUTATION = gql`
       description: $description
       price: $price
       image: $image
+      largeImage: $largeImage
     ) {
       id
       title
       description
       price
       image
+      largeImage
     }
   }
 `;
@@ -66,6 +69,7 @@ class UpdateItem extends Component {
     super();
     this.state = {
       image: '',
+      largeImage: '',
     };
 
     this.handleChage = this.handleChage.bind(this);
@@ -83,19 +87,25 @@ class UpdateItem extends Component {
     e.preventDefault();
     const { id } = this.props;
     const vars = { ...this.state };
-    console.log('vars', vars);
+
     if (vars.image === '') {
       delete vars.image;
     }
-    console.log('vars', vars);
 
-    console.log(this.state);
+    if (vars.largeImage === '') {
+      delete vars.largeImage;
+    }
+
     await updateItemMutation({
       variables: {
         id,
         ...vars,
       },
     });
+
+    if (vars.image === '') {
+      window.location.reload(false);
+    }
   }
 
   async uploadFile(e) {
@@ -112,10 +122,12 @@ class UpdateItem extends Component {
         body: data,
       },
     );
-    const file = await res.json();
-    console.log(file);
+
+    const { secure_url: secureUrl, eager } = await res.json();
     this.setState({
-      image: file.secure_url,
+      image: secureUrl,
+      // eslint-disable-next-line react/no-unused-state
+      largeImage: eager && eager[0].secure_url,
     });
   }
 
@@ -219,5 +231,5 @@ class UpdateItem extends Component {
   }
 }
 
-export default UpdateItem;
 export { UPDATE_ITEM_MUTATION };
+export default UpdateItem;
