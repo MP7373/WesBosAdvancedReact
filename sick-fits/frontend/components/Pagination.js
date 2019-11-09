@@ -37,14 +37,12 @@ export default function Pagination({ page }) {
                 query: { page: page - 1 },
               }}
             >
-              <a className="prev" aria-disabled={page <= 1}>{'<- Prev'}</a>
+              <a className="prev" aria-disabled={page <= 1}>
+                {'<- Prev'}
+              </a>
             </Link>
-            <p>
-              {`Page ${page} of ${pages}`}
-            </p>
-            <p>
-              {`${count} Items Total`}
-            </p>
+            <p>{`Page ${page} of ${pages}`}</p>
+            <p>{`${count} Items Total`}</p>
             <Link
               prefetch
               href={{
@@ -52,7 +50,9 @@ export default function Pagination({ page }) {
                 query: { page: page + 1 },
               }}
             >
-              <a className="prev" aria-disabled={page >= pages}>{'Next ->'}</a>
+              <a className="prev" aria-disabled={page >= pages}>
+                {'Next ->'}
+              </a>
             </Link>
           </PaginationStyles>
         );

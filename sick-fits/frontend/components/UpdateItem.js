@@ -109,7 +109,6 @@ class UpdateItem extends Component {
   }
 
   async uploadFile(e) {
-    console.log('uploading file');
     const { files } = e.target;
     const data = new FormData();
     data.append('file', files[0]);

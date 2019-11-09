@@ -1,12 +1,13 @@
-const { forwardTo } = require('prisma-binding');
-
 const mutations = {
   async createItem(parent, args, ctx, info) {
-    const item = await ctx.db.mutation.createItem({
-      data: {
-        ...args,
+    const item = await ctx.db.mutation.createItem(
+      {
+        data: {
+          ...args,
+        },
       },
-    }, info);
+      info,
+    );
 
     return item;
   },
@@ -40,7 +41,7 @@ const mutations = {
   },
   async deleteItem(parent, args, ctx, info) {
     const where = { id: args.id };
-    const item = await ctx.db.query.item({ where }, '{ id title }');
+    // const item = await ctx.db.query.item({ where }, '{ id title }');
 
     return ctx.db.mutation.deleteItem({ where }, info);
   },

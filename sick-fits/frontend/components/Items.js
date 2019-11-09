@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Item from './Item';
 import Pagination from './Pagination';
 import ALL_ITEMS_QUERY from '../graphql-queries/ALL_ITEMS_QUERY';
+import { perPage } from '../config';
 
 const Center = styled.div`
   text-align: center;
@@ -21,13 +22,20 @@ export default function Items({ page }) {
   return (
     <Center>
       <Pagination page={page} />
-      <Query query={ALL_ITEMS_QUERY}>
+      <Query
+        query={ALL_ITEMS_QUERY}
+        variables={{
+          skip: page * perPage - perPage,
+        }}
+      >
         {({ data, error, loading }) => {
           if (loading) return <p>Loading...</p>;
           if (error) return <p>{error.message}</p>;
           return (
             <ItemsList>
-              {data.items.map((item) => <Item key={item.id} item={item} />)}
+              {data.items.map((item) => (
+                <Item key={item.id} item={item} />
+              ))}
             </ItemsList>
           );
         }}
