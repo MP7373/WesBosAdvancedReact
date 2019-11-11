@@ -69,27 +69,25 @@ class CreateItem extends Component {
 
   render() {
     const {
-      title,
-      price,
-      description,
-      image,
-    } = this.state;
+ title, price, description, image 
+} = this.state;
 
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error }) => (
-          <Form onSubmit={async (e) => {
-            e.preventDefault();
-            const res = await createItem();
-            if (!res) {
-              Router.push({
-                pathname: '/update',
-                query: { id: res.data.createItem.id },
-              });
-            } else {
-              window.location.reload(false);
-            }
-          }}
+          <Form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const res = await createItem();
+              if (!res) {
+                Router.push({
+                  pathname: '/update',
+                  query: { id: res.data.createItem.id },
+                });
+              } else {
+                window.location.reload(false);
+              }
+            }}
           >
             <Error error={error} />
             <fieldset disabled={loading} aria-busy={loading}>
