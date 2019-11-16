@@ -1,36 +1,56 @@
+/* eslint-disable import/no-duplicates */
 import Link from 'next/link';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
 import NavStyles from './styles/NavStyles';
 import User from './User';
+import { CURRENT_USER_QUERY } from './User';
+
+const SIGN_OUT_MUTATION = gql`
+  mutation {
+    signout {
+      message
+    }
+  }
+`;
 
 const Nav = () => (
-  <NavStyles>
-    <User>
-      {({
-        data: {
-          me: { name },
-        },
-      }) => {
-        console.log(name);
-        if (name) return <p>{name}</p>;
-        return null;
-      }}
-    </User>
-    <Link href="/">
-      <button type="button">Items</button>
-    </Link>
-    <Link href="/sell">
-      <button type="button">Sell</button>
-    </Link>
-    <Link href="/signup">
-      <button type="button">SignUp</button>
-    </Link>
-    <Link href="/orders">
-      <button type="button">Orders</button>
-    </Link>
-    <Link href="/me">
-      <button type="button">Account</button>
-    </Link>
-  </NavStyles>
+  <User>
+    {({ data }) => (
+      <NavStyles>
+        <Link href="/">
+          <button type="button">Items</button>
+        </Link>
+        {data && data.me && data.me.name ? (
+          <>
+            <Link href="/sell">
+              <button type="button">Sell</button>
+            </Link>
+            <Link href="/orders">
+              <button type="button">Orders</button>
+            </Link>
+            <Link href="/me">
+              <button type="button">Account</button>
+            </Link>
+            <Mutation
+              mutation={SIGN_OUT_MUTATION}
+              refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+            >
+              {(signout) => (
+                <button type="button" onClick={() => signout()}>
+                  Sign Out
+                </button>
+              )}
+            </Mutation>
+          </>
+        ) : (
+          <Link href="/signup">
+            <button type="button">Sign In</button>
+          </Link>
+        )}
+      </NavStyles>
+    )}
+  </User>
 );
 
 export default Nav;

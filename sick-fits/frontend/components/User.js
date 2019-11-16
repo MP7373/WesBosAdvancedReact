@@ -20,8 +20,7 @@ const User = (props) => (
   </Query>
 );
 
-// eslint-disable-next-line react/no-typos
-User.PropTypes = {
+User.propTypes = {
   children: PropTypes.func.isRequired,
 };
 

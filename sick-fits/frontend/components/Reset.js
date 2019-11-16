@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
+import PropTypes from 'prop-types';
 import Form from './styles/Form';
 import Error from './ErrorMessage';
 import { CURRENT_USER_QUERY } from './User';
 
-const SIGNUP_MUTATION = gql`
-  mutation SIGNUP_MUTATION(
-    $email: String!
-    $name: String!
+const RESET_MUTATION = gql`
+  mutation RESET_MUTATION(
+    $resetToken: String!
     $password: String!
+    $confirmPassword: String!
   ) {
-    signup(email: $email, name: $name, password: $password) {
+    resetPassword(
+      resetToken: $resetToken
+      password: $password
+      confirmPassword: $confirmPassword
+    ) {
       id
       email
       name
@@ -20,13 +25,12 @@ const SIGNUP_MUTATION = gql`
 `;
 
 // eslint-disable-next-line react/prefer-stateless-function
-export default class Signup extends Component {
+class Reset extends Component {
   constructor() {
     super();
     this.state = {
-      email: '',
-      name: '',
       password: '',
+      confirmPassword: '',
     };
 
     this.saveToState = this.saveToState.bind(this);
@@ -37,47 +41,32 @@ export default class Signup extends Component {
   }
 
   render() {
-    const { email, name, password } = this.state;
+    const { password, confirmPassword } = this.state;
+    const { resetToken } = this.props;
 
     return (
       <Mutation
-        mutation={SIGNUP_MUTATION}
-        variables={this.state}
+        mutation={RESET_MUTATION}
+        variables={{
+          resetToken,
+          password,
+          confirmPassword,
+        }}
         refetchQueries={[{ query: CURRENT_USER_QUERY }]}
       >
-        {(signup, { error, loading }) => (
+        {(reset, { error, loading }) => (
           <Form
             method="post"
             onSubmit={async (e) => {
               e.preventDefault();
-              const res = await signup();
-              console.log(res);
-              this.setState({ name: '', email: '', password: '' });
+              await reset();
+              this.setState({ password: '', confirmPassword: '' });
             }}
           >
             <fieldset disabled={loading} aria-busy={loading}>
-              <h2>Sign Up for An Account</h2>
+              <h2>Reset Your Password</h2>
               <Error error={error} />
-              <label htmlFor="email">
-                Email
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="email"
-                  value={email}
-                  onChange={this.saveToState}
-                />
-              </label>
-              <label htmlFor="name">
-                Name
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="name"
-                  value={name}
-                  onChange={this.saveToState}
-                />
-              </label>
+
               <label htmlFor="password">
                 Password
                 <input
@@ -88,7 +77,19 @@ export default class Signup extends Component {
                   onChange={this.saveToState}
                 />
               </label>
-              <button type="submit">Signup</button>
+
+              <label htmlFor="confirmPassword">
+                Confirm Password
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="confirmPassword"
+                  value={confirmPassword}
+                  onChange={this.saveToState}
+                />
+              </label>
+
+              <button type="submit">Reset Your Password</button>
             </fieldset>
           </Form>
         )}
@@ -96,3 +97,9 @@ export default class Signup extends Component {
     );
   }
 }
+
+Reset.propTypes = {
+  resetToken: PropTypes.string.isRequired,
+};
+
+export default Reset;
