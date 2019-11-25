@@ -8,10 +8,19 @@ const defaultCookieAge = 1000 * 60 * 60 * 24 * 365;
 
 const mutations = {
   async createItem(parent, args, ctx, info) {
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to create an item!');
+    }
+
     const item = await ctx.db.mutation.createItem(
       {
         data: {
           ...args,
+          user: {
+            connect: {
+              id: ctx.request.userId,
+            },
+          },
         },
       },
       info,
