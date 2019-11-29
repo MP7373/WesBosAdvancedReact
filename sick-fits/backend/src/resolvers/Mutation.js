@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
+const { hasPermission } = require('../utils');
 
 const defaultCookieAge = 1000 * 60 * 60 * 24 * 365;
 
@@ -126,7 +127,9 @@ const mutations = {
       to: user.email,
       subject: 'Your Password Reset Token',
       html: makeANiceEmail(
-        `Your Password Reset Token is here! \n\n <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}">Click Here to Reset</a>`,
+        `Your Password Reset Token is here! \n\n <a href="${
+          process.env.FRONTEND_URL
+        }/reset?resetToken=${resetToken}">Click Here to Reset</a>`,
       ),
     });
 
@@ -161,6 +164,34 @@ const mutations = {
     });
 
     return updatedUser;
+  },
+  async updatePermissions(parent, args, ctx, info) {
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in!');
+    }
+    const currentUser = await ctx.db.query.user(
+      {
+        where: {
+          id: ctx.request.userId,
+        },
+      },
+      info,
+    );
+    hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE']);
+
+    return ctx.db.mutation.updateUser(
+      {
+        data: {
+          permissions: {
+            set: args.permissions,
+          },
+        },
+        where: {
+          id: args.userId,
+        },
+      },
+      info,
+    );
   },
 };
 
