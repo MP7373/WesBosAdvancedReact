@@ -17,7 +17,9 @@ const DELETE_ITEM_MUTATION = gql`
 export default class DeleteItem extends Component {
   static update(cache, payload) {
     const data = cache.readQuery({ query: ALL_ITEMS_QUERY });
-    data.items = data.items.filter((item) => item.id !== payload.data.deleteItem.id);
+    data.items = data.items.filter(
+      (item) => item.id !== payload.data.deleteItem.id,
+    );
 
     cache.writeQuery({ query: ALL_ITEMS_QUERY, data });
   }
@@ -31,12 +33,12 @@ export default class DeleteItem extends Component {
         variables={{ id }}
         update={DeleteItem.update}
       >
-        {(deleteItem) => (
+        {(deleteItem, { error }) => (
           <button
             type="button"
             onClick={() => {
               if (confirm('Are you sure you want to delete this item?')) {
-                deleteItem();
+                deleteItem().catch((err) => alert(err.message));
               }
             }}
           >

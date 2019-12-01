@@ -59,7 +59,12 @@ const mutations = {
   },
   async deleteItem(parent, args, ctx, info) {
     const where = { id: args.id };
-    // const item = await ctx.db.query.item({ where }, '{ id title }');
+    const item = await ctx.db.query.item({ where }, '{ id title user { id }}');
+    const ownsItem = item.user.id === ctx.request.userId;
+    const hasPermissions = ctx.request.user.permissions.some((p) => ['ADMIN', 'ITEMDELETE'].includes(p));
+    if (!ownsItem && !hasPermissions) {
+      throw new Error('You don\'t have permission to do that!');
+    }
 
     return ctx.db.mutation.deleteItem({ where }, info);
   },
@@ -127,9 +132,7 @@ const mutations = {
       to: user.email,
       subject: 'Your Password Reset Token',
       html: makeANiceEmail(
-        `Your Password Reset Token is here! \n\n <a href="${
-          process.env.FRONTEND_URL
-        }/reset?resetToken=${resetToken}">Click Here to Reset</a>`,
+        `Your Password Reset Token is here! \n\n <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}">Click Here to Reset</a>`,
       ),
     });
 
