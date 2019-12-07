@@ -8,34 +8,41 @@ import ItemStyles from './styles/ItemStyles';
 import PriceTag from './styles/PriceTag';
 // eslint-disable-next-line import/no-cycle
 import DeleteItem from './DeleteItem';
+import AddToCart from './AddToCart';
 
 function Item({ item }) {
   return (
     <ItemStyles>
       {item.image && <img src={item.image} alt={item.title} />}
       <Title>
-        <Link href={{
-          pathname: '/item',
-          query: { id: item.id },
-        }}
+        <Link
+          href={{
+            pathname: '/item',
+            query: { id: item.id },
+          }}
         >
-          <a>{item.title}</a>
+          <a>
+            {item.title}
+          </a>
         </Link>
       </Title>
       <PriceTag>{formatMoney(item.price)}</PriceTag>
       <p>{item.description}</p>
       <div className="buttonList">
-        <Link href={{
-          pathname: 'update',
-          query: { id: item.id },
-        }}
+        <Link
+          href={{
+            pathname: 'update',
+            query: { id: item.id },
+          }}
         >
           <a>
             Edit
-            <span role="img" aria-label="pencil">✏️</span>
+            <span role="img" aria-label="pencil">
+              ✏️
+            </span>
           </a>
         </Link>
-        <button type="button">Add To Cart</button>
+        <AddToCart id={item.id} />
         <DeleteItem id={item.id}>Delete Item</DeleteItem>
       </div>
     </ItemStyles>
