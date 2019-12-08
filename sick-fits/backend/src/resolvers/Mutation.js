@@ -4,6 +4,7 @@ const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 const { transport, makeANiceEmail } = require('../mail');
 const { hasPermission } = require('../utils');
+const stripe = require('../stripe');
 
 const defaultCookieAge = 1000 * 60 * 60 * 24 * 365;
 
@@ -201,18 +202,15 @@ const mutations = {
     if (!userId) {
       throw new Error('You must be signed in!');
     }
-    console.log(args.id);
     const cartItems = await ctx.db.query.cartItems({
       where: {
         user: { id: userId },
         item: { id: args.id },
       },
     });
-    cartItems.forEach((e) => console.log(e.id));
     const [existingCartItem] = cartItems;
     if (existingCartItem) {
       console.log('This item is already in their cart!');
-      console.log(existingCartItem.id);
       return ctx.db.mutation.updateCartItem({
         where: { id: existingCartItem.id },
         data: { quantity: existingCartItem.quantity + 1 },
@@ -229,6 +227,88 @@ const mutations = {
         },
       },
     }, info);
+  },
+  async removeFromCart(parent, args, ctx, info) {
+    const cartItem = await ctx.db.query.cartItem({
+      where: {
+        id: args.id,
+      },
+    }, '{ id, user { id }}');
+    if (!cartItem) {
+      throw new Error('This item is not in your cart!');
+    }
+    if (cartItem.user.id !== ctx.request.userId) {
+      throw new Error('You don\'t have permission to do that!');
+    }
+    return ctx.db.mutation.deleteCartItem({ where: { id: args.id } }, info);
+  },
+  async createOrder(parent, args, ctx, info) {
+    const { userId } = ctx.request;
+    if (!userId) throw new Error('You must be singed in to complete this order.');
+
+    const user = await ctx.db.query.user(
+      { where: { id: userId } },
+      `{
+        id
+        name
+        email
+        cart {
+          id
+          quantity
+          item {
+            title
+            price
+            id
+            description
+            image
+            largeImage
+          }
+        }
+      }`,
+    );
+    console.log(user);
+
+    const amount = user.cart.reduce(
+      (tally, cartItem) => tally + cartItem.quantity * cartItem.item.price,
+      0,
+    );
+
+    console.log(`Going to charge for: ${amount}`);
+    console.log(`token: ${args.token}`);
+    const charge = await stripe.charges.create({
+      amount,
+      currency: 'USD',
+      source: args.token,
+    });
+    console.log(charge);
+
+    const orderItems = user.cart.map((cartItem) => {
+      const orderItem = {
+        quantity: cartItem.quantity,
+        user: { connect: { id: userId } },
+        ...cartItem.item,
+      };
+      delete orderItem.id;
+      return orderItem;
+    });
+
+    const order = await ctx.db.mutation.createOrder({
+      data: {
+        total: charge.amount,
+        charge: charge.id,
+        items: { create: orderItems },
+        user: { connect: { id: userId } },
+      },
+    });
+
+    const cartItemIds = user.cart.map((cartItem) => cartItem.id);
+    await ctx.db.mutation.deleteManyCartItems({
+      where: {
+        id_in: cartItemIds,
+      },
+    });
+
+    return order;
   },
 };
 

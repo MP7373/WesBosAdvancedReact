@@ -6,6 +6,7 @@ import NavStyles from './styles/NavStyles';
 import User from './User';
 import { CURRENT_USER_QUERY } from './User';
 import { TOGGLE_CART_MUTATION } from './Cart';
+import CartCount from './CartCount';
 
 const SIGN_OUT_MUTATION = gql`
   mutation {
@@ -45,7 +46,10 @@ const Nav = () => (
             </Mutation>
             <Mutation mutation={TOGGLE_CART_MUTATION}>
               {(toggleCart) => (
-                <button type="button" onClick={toggleCart}>Cart</button>
+                <button type="button" onClick={toggleCart}>
+                  Cart
+                  <CartCount count={data.me.cart.reduce((sum, item) => sum + item.quantity, 0)} />
+                </button>
               )}
             </Mutation>
           </>
