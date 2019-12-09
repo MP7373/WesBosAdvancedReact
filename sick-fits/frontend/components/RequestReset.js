@@ -13,6 +13,7 @@ const REQUEST_RESET_MUTATION = gql`
   }
 `;
 
+export { REQUEST_RESET_MUTATION };
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Signin extends Component {
   constructor() {
@@ -36,6 +37,7 @@ export default class Signin extends Component {
         {(reset, { error, loading, called }) => (
           <Form
             method="post"
+            data-test="form"
             onSubmit={async (e) => {
               e.preventDefault();
               await reset();

@@ -14,29 +14,28 @@ const CartItemStyles = styled.li`
   img {
     margin-right: 10px;
   }
-  h3, p {
+  h3,
+  p {
     margin: 0;
   }
 `;
 
-
 const CartItem = ({ cartItem }) => (
   <CartItemStyles>
     {cartItem.item ? (
-      <>
+      <React.Fragment>
         <img width="100" src={cartItem.item.image} alt={cartItem.item.title} />
         <div className="cart-item-details">
           <h3>{cartItem.item.title}</h3>
           <p>
-            {`${formatMoney(cartItem.item.price * cartItem.quantity)} `}
-                -
+            {`${formatMoney(cartItem.item.price * cartItem.quantity)} `}-
             <em>{` ${cartItem.quantity} `}</em>
-                &times;
+            &times;
             {` ${formatMoney(cartItem.item.price)} `}
-                each
+            each
           </p>
         </div>
-      </>
+      </React.Fragment>
     ) : (
       <p>This item is no longer available.</p>
     )}

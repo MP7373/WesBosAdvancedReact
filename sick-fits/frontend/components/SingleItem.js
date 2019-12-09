@@ -61,10 +61,7 @@ class SingleItem extends Component {
           return (
             <SingleItemStyles>
               <Head>
-                <title>
-                  Sick Fits |
-                  {` ${title}`}
-                </title>
+                <title>Sick Fits |{` ${title}`}</title>
               </Head>
               <img src={item.largeImage} alt={title} />
               <div className="details">
@@ -82,4 +79,5 @@ class SingleItem extends Component {
   }
 }
 
+export { SINGLE_ITEM_QUERY };
 export default SingleItem;

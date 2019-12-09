@@ -17,6 +17,8 @@ const PAGINATION_QUERY = gql`
   }
 `;
 
+export { PAGINATION_QUERY };
+
 export default function Pagination({ page }) {
   return (
     <Query query={PAGINATION_QUERY}>
@@ -26,7 +28,7 @@ export default function Pagination({ page }) {
         const { count } = data.itemsConnection.aggregate;
         const pages = Math.ceil(count / perPage);
         return (
-          <PaginationStyles>
+          <PaginationStyles data-test="pagination">
             <Head>
               <title>{`Sick Fits! Page - ${page} of ${pages}`}</title>
             </Head>
@@ -41,7 +43,10 @@ export default function Pagination({ page }) {
                 {'<- Prev'}
               </a>
             </Link>
-            <p>{`Page ${page} of ${pages}`}</p>
+            <p>
+              {`Page ${page} of `}
+              <span className="totalPages">{pages}</span>
+            </p>
             <p>{`${count} Items Total`}</p>
             <Link
               prefetch
@@ -50,7 +55,7 @@ export default function Pagination({ page }) {
                 query: { page: page + 1 },
               }}
             >
-              <a className="prev" aria-disabled={page >= pages}>
+              <a className="next" aria-disabled={page >= pages}>
                 {'Next ->'}
               </a>
             </Link>

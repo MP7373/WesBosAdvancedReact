@@ -21,21 +21,14 @@ const SIGNUP_MUTATION = gql`
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class Signup extends Component {
-  constructor() {
-    super();
-    this.state = {
-      email: '',
-      name: '',
-      password: '',
-    };
-
-    this.saveToState = this.saveToState.bind(this);
-  }
-
-  saveToState(e) {
+  state = {
+    email: '',
+    name: '',
+    password: '',
+  };
+  saveToState = (e) => {
     this.setState({ [e.target.name]: e.target.value });
-  }
-
+  };
   render() {
     const { email, name, password } = this.state;
 
@@ -50,9 +43,8 @@ export default class Signup extends Component {
             method="post"
             onSubmit={async (e) => {
               e.preventDefault();
-              const res = await signup();
-              console.log(res);
-              this.setState({ name: '', email: '', password: '' });
+              await signup();
+              this.setState({ email: '', name: '', password: '' });
             }}
           >
             <fieldset disabled={loading} aria-busy={loading}>

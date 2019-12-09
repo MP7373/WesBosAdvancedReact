@@ -36,9 +36,18 @@ const Query = {
 
     const hasPermissionToSeeOrder = ctx.request.user.permissions.includes('ADMIN');
 
-    if (!ownsOrder || !hasPermission) throw new Error('You don\'t have permissions to do this!');
+    if (!ownsOrder || !hasPermissionToSeeOrder) throw new Error('You don\'t have permissions to do this!');
 
     return order;
+  },
+  async orders(parent, args, ctx, info) {
+    const { userId } = ctx.request;
+    if (!userId) throw new Error('You must be signed in!');
+    return ctx.db.query.orders({
+      where: {
+        user: { id: userId },
+      },
+    }, info);
   },
 };
 

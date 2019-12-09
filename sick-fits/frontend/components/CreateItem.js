@@ -32,6 +32,7 @@ class CreateItem extends Component {
       title: '',
       description: '',
       image: '',
+      largeImage: '',
       price: 0,
     };
 
@@ -56,7 +57,7 @@ class CreateItem extends Component {
       {
         method: 'POST',
         body: data,
-      },
+      }
     );
 
     const { secure_url: secureUrl, eager } = await res.json();
@@ -68,25 +69,20 @@ class CreateItem extends Component {
   }
 
   render() {
-    const {
- title, price, description, image 
-} = this.state;
+    const { title, price, description, image } = this.state;
 
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error }) => (
           <Form
+            data-test="form"
             onSubmit={async (e) => {
               e.preventDefault();
               const res = await createItem();
-              if (!res) {
-                Router.push({
-                  pathname: '/update',
-                  query: { id: res.data.createItem.id },
-                });
-              } else {
-                window.location.reload(false);
-              }
+              Router.push({
+                pathname: '/item',
+                query: { id: res.data.createItem.id },
+              });
             }}
           >
             <Error error={error} />

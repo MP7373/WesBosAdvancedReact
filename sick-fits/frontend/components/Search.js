@@ -58,7 +58,10 @@ class AutoComplete extends React.Component {
     this.setState((prevState) => ({
       items: e.target.value !== '' ? res.data.items : [],
       loading: false,
-      attemptedSearches: { ...prevState.attemptedSearches, [e.target.value]: true },
+      attemptedSearches: {
+        ...prevState.attemptedSearches,
+        [e.target.value]: true,
+      },
       lastCompletedSearch: [e.target.value],
     }));
   }
@@ -67,9 +70,16 @@ class AutoComplete extends React.Component {
     resetIdCounter();
     return (
       <SearchStyles>
-        <Downshift onChange={routeToItem} itemToString={(item) => (item == null ? '' : item.title)}>
+        <Downshift
+          onChange={routeToItem}
+          itemToString={(item) => (item == null ? '' : item.title)}
+        >
           {({
-            getInputProps, getItemProps, isOpen, inputValue, highlightedIndex,
+            getInputProps,
+            getItemProps,
+            isOpen,
+            inputValue,
+            highlightedIndex,
           }) => (
             <div>
               <ApolloConsumer>
@@ -86,7 +96,10 @@ class AutoComplete extends React.Component {
                         console.log('Searching...');
                         this.setState((prevState) => ({
                           loading: true,
-                          lastCompletedSearch: [...prevState.lastCompletedSearch, e.target.value],
+                          lastCompletedSearch: [
+                            ...prevState.lastCompletedSearch,
+                            e.target.value,
+                          ],
                         }));
                         this.onChange(e, client);
                       },
@@ -94,28 +107,28 @@ class AutoComplete extends React.Component {
                   />
                 )}
               </ApolloConsumer>
-              {isOpen
-              && (
-              <DropDown>
-                {inputValue !== '' && !this.state.lastCompletedSearch.includes('') && this.state.items.map((item, index) => (
-                  <DropDownItem
-                    {...getItemProps({ item })}
-                    key={item.id}
-                    highlighted={index === highlightedIndex}
-                  >
-                    <img width="50" src={item.image} alt={item.title} />
-                    {item.title}
-                  </DropDownItem>
-                ))}
-              </DropDown>
+              {isOpen && (
+                <DropDown>
+                  {inputValue !== '' &&
+                    !this.state.lastCompletedSearch.includes('') &&
+                    this.state.items.map((item, index) => (
+                      <DropDownItem
+                        {...getItemProps({ item })}
+                        key={item.id}
+                        highlighted={index === highlightedIndex}
+                      >
+                        <img width="50" src={item.image} alt={item.title} />
+                        {item.title}
+                      </DropDownItem>
+                    ))}
+                </DropDown>
               )}
-              {!this.state.items.length && !this.state.items.loading && inputValue !== '' && this.state.attemptedSearches[inputValue] && (
-                <DropDownItem>
-                  Nothing Found For
-                  {' '}
-                  {inputValue}
-                </DropDownItem>
-              )}
+              {!this.state.items.length &&
+                !this.state.items.loading &&
+                inputValue !== '' &&
+                this.state.attemptedSearches[inputValue] && (
+                  <DropDownItem>Nothing Found For {inputValue}</DropDownItem>
+                )}
             </div>
           )}
         </Downshift>
