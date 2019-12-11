@@ -30,6 +30,8 @@ const SINGLE_ORDER_QUERY = gql`
   }
 `;
 
+export { SINGLE_ORDER_QUERY };
+
 export default class Order extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
@@ -43,7 +45,7 @@ export default class Order extends Component {
           if (loading) return <p>Loading...</p>;
           const order = data.order;
           return (
-            <OrderStyles>
+            <OrderStyles data-test="order">
               <Head>
                 <title>Sick Fits - Order {order.id}</title>
               </Head>
