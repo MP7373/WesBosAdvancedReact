@@ -20,7 +20,7 @@ const Query = {
     if (!ctx.request.userId) {
       throw new Error('User not logged in!');
     }
-
+    // check if user has permissions
     hasPermission(ctx.request.user, ['ADMIN', 'PERMISSIONUPDATE']);
 
     return ctx.db.query.users({}, info);
