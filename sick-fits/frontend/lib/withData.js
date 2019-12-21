@@ -1,12 +1,11 @@
 import withApollo from 'next-with-apollo';
 import ApolloClient from 'apollo-boost';
-import { endpoint } from '../config';
+import { endpoint, prodEndpoint } from '../config';
 import { LOCAL_STATE_QUERY } from '../components/Cart';
 
 function createClient({ headers }) {
   return new ApolloClient({
-
-    uri: process.env.NODE_ENV === 'development' ? endpoint : endpoint, // eslint-disable-line no-undef
+    uri: process.env.NODE_ENV === 'development' ? endpoint : prodEndpoint, // eslint-disable-line no-undef
     request: (operation) => {
       operation.setContext({
         fetchOptions: {
