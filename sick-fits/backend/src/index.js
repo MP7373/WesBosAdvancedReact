@@ -36,7 +36,7 @@ server.start(
       credentials: true,
       origin: process.env.FRONTEND_URL,
     },
-    port: 4444,
+    port: process.env.PORT,
   },
   (deets) => {
     // eslint-disable-next-line no-console
