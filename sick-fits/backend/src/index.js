@@ -42,5 +42,7 @@ server.start(
     // eslint-disable-next-line no-console
     console.log(`Server is now running on port
     http:/localhost:${deets.port}`);
+    console.log(`Requests allowed from:
+    ${process.env.FRONTEND_URL}`);
   },
 );
